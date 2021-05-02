@@ -5,6 +5,7 @@ import { AuthService } from '../../auth/auth.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { SettingsService } from '../settings/settings.service';
 import { Router } from '@angular/router';
+import { JwtHelperService } from "@auth0/angular-jwt";
 
 @Component({
   selector: 'app-schema',
@@ -30,20 +31,22 @@ export class SchemaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.rooms = this.schemaService.roomsInfo;
+    const currentUser = JSON.parse(localStorage.getItem('CurrentUser'));
 
-    this.fetchFavouriteLaundryRoomSubscription = this.settingsService.fetchPublicUserInfoRoom()
-      .subscribe((userInfoDoc: any) => {
-        const userInfo = userInfoDoc.data();
-        console.log('fethingFavouriteRoom and navigating: {}', userInfo);
-        this.router.navigate([`room/${userInfo.favouriteRoom}`]);
-      });
+    // this.fetchFavouriteLaundryRoomSubscription = this.settingsService.fetchPublicUserInfoRoom()
+    //   .subscribe((userInfoDoc: any) => {
+    //     const userInfo = userInfoDoc.data();
+    //     console.log('fethingFavouriteRoom and navigating: {}', userInfo);
+    //     this.router.navigate([`room/${userInfo.favouriteRoom}`]);
+    //   });
 
-    this.fetchUserInformationSubscription =
-      this.authService.fetchUserInformation().valueChanges().subscribe((userData: any) => {
-        this.counterData = userData.counters;
-        console.log('this.counterData', this.counterData);
-      });
-
+    // this.fetchUserInformationSubscription =
+    //   this.authService.fetchUserInformation().valueChanges().subscribe((userData: any) => {
+    //     this.counterData = userData.counters;
+    //     console.log('this.counterData', this.counterData);
+    //   });
+    this.counterData = currentUser.counter;
+  console.log('this.counterData', this.counterData)
     this.currentDate = new Date();
   }
 

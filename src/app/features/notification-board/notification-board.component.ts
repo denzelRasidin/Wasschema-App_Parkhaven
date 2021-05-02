@@ -16,9 +16,9 @@ export class NotificationBoardComponent implements OnInit {
   }
 
   ngOnInit() {
-    const houseNumber = this.authService.getCurrentSignedInUser().displayName;
+    // const houseNumber = this.authService.getCurrentSignedInUser().displayName;
 
-    this.afStore.collection('publicUsersInfo').doc(houseNumber).update({isNewNotificationAvailable: false});
+    // this.afStore.collection('publicUsersInfo').doc(houseNumber).update({isNewNotificationAvailable: false});
   }
 
   toggleBetweenMessagesAndEditor() {

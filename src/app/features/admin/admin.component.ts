@@ -47,18 +47,18 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.times = this.schemaService.times;
     this.rooms = this.schemaService.roomsInfo;
 
-    this.schemaService.onInitFetchMachinesInfo().then(machinesQuery => {
-      machinesQuery.forEach(doc => {
-        const data = doc.data();
+    // this.schemaService.onInitFetchMachinesInfo().then(machinesQuery => {
+    //   machinesQuery.forEach(doc => {
+    //     const data = doc.data();
 
-        this.allMachines.push({
-          id: doc.id,
-          type: data.type,
-          room: data.room,
-          color: data.color
-        });
-      });
-    });
+    //     this.allMachines.push({
+    //       id: doc.id,
+    //       type: data.type,
+    //       room: data.room,
+    //       color: data.color
+    //     });
+    //   });
+    // });
 
     this.usersSubscription = this.afStore.collection('users').snapshotChanges().pipe(
       map((docArray: DocumentChangeAction<object>[]) => {
@@ -91,16 +91,16 @@ export class AdminComponent implements OnInit, OnDestroy {
   delete(user) {
     const currentUser = this.authService.getCurrentSignedInUser();
 
-    currentUser.getIdToken(true).then(token => {
-      return this.http.put(`${environment.firebaseUrl}/deleteUser`, {
-        userToDelete: user,
-        jwt: token
-      }).toPromise();
-    }).then((response: any) => {
-      this.snackBar.open(response.message, 'OK');
-    }).catch((httpErrorResponse: HttpErrorResponse) => {
-      this.snackBar.open(httpErrorResponse.error.message, 'OK');
-    });
+    // currentUser.getIdToken(true).then(token => {
+    //   return this.http.put(`${environment.firebaseUrl}/deleteUser`, {
+    //     userToDelete: user,
+    //     jwt: token
+    //   }).toPromise();
+    // }).then((response: any) => {
+    //   this.snackBar.open(response.message, 'OK');
+    // }).catch((httpErrorResponse: HttpErrorResponse) => {
+    //   this.snackBar.open(httpErrorResponse.error.message, 'OK');
+    // });
   }
 
   addMaintenance() {

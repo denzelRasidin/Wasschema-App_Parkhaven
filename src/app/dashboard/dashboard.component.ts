@@ -1,23 +1,23 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NavigationEnd, Router, RouterLinkActive } from '@angular/router';
-import { MediaChange, ObservableMedia } from '@angular/flex-layout';
-import { MatSidenav, MatSnackBar } from '@angular/material';
-import { AuthService } from '../auth/auth.service';
-import { SchemaService } from '../features/schema/schema.service';
-import { SettingsService } from '../features/settings/settings.service';
-import { combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Subscription } from 'rxjs/internal/Subscription';
-import { DashboardService } from './dashboard.service';
-import { AngularFireMessaging } from '@angular/fire/messaging';
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { NavigationEnd, Router, RouterLinkActive } from "@angular/router";
+import { MediaChange, ObservableMedia } from "@angular/flex-layout";
+import { MatSidenav, MatSnackBar } from "@angular/material";
+import { AuthService } from "../auth/auth.service";
+import { SchemaService } from "../features/schema/schema.service";
+import { SettingsService } from "../features/settings/settings.service";
+import { combineLatest } from "rxjs";
+import { map } from "rxjs/operators";
+import { Subscription } from "rxjs/internal/Subscription";
+import { DashboardService } from "./dashboard.service";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { JwtHelperService } from "@auth0/angular-jwt";
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  selector: "app-dashboard",
+  templateUrl: "./dashboard.component.html",
+  styleUrls: ["./dashboard.component.css"],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-
   sideNavMode;
   sideNavOpened;
 
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSidenav) private sideNav: MatSidenav;
 
-  @ViewChild('rla') private rla: RouterLinkActive;
+  @ViewChild("rla") private rla: RouterLinkActive;
 
   schemaRouterLinkActive;
 
@@ -40,78 +40,109 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private messagingSubscription: Subscription;
   private newMessageInNotificationBoardSubscription: Subscription;
 
-  constructor(private router: Router,
-              private authService: AuthService,
-              private observableMedia: ObservableMedia,
-              private schemaService: SchemaService,
-              private settingsService: SettingsService,
-              private dashboardService: DashboardService,
-              private afMessaging: AngularFireMessaging,
-              private snackBar: MatSnackBar) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private observableMedia: ObservableMedia,
+    private schemaService: SchemaService,
+    private settingsService: SettingsService,
+    private dashboardService: DashboardService,
+    private snackBar: MatSnackBar,
+    private http: HttpClient
+  ) {
     // bad practice, but put this in the ngOnInit and it won't fire the first time...
     this.setSchemaRouterLinkActiveWhenOnARoom();
   }
 
   ngOnInit() {
     this.screenHandler();
+    this.loggedInUser = JSON.parse(localStorage.getItem("CurrentUser"));
+    console.log(localStorage.getItem("token"));
+    const token =  localStorage.getItem('token')
+    console.log(token);
+    const headers = new HttpHeaders({
+      // "Content-Type": "application/json",
+      // "Accept": '*/*',
+      Authorization: `Bearer ${token}`,
+      // 'Access-Control-Allow-Origin': 'http://localhost:4200/'
+    });
+    // console.log("header"+ JSON.parse(headers))
+    // let headers = new HttpHeaders();
+    // headers.append("Content-Type", "application/json");
+    // headers.append("authentication", `${localStorage.getItem("token")}`);
+    let  RequestOptions = ({ headers: headers });
+console.log( "headers" + RequestOptions);
+// console.log(RequestOptions.headers)
 
-    this.loggedInUser = this.authService.getCurrentSignedInUser();
-
-    this.messagingSubscription = this.afMessaging.messages.subscribe((message: any) => {
-      this.snackBar.open(message.notification.body, 'OK', {duration: 30000});
-    }, () => {
-      // swallow error when notifications blocked
+    let loginUrl =
+      "api/v1/building/woongebouw-parkhaven/room/A";
+    this.http.get(loginUrl,  RequestOptions ).subscribe((data) => {
+      console.log(data);
     });
 
-    this.megaSubscription = combineLatest(
-      this.authService.fetchUserInformation().valueChanges(),
-      this.schemaService.onInitFetchMachinesInfo(),
-      // still an observable, but short processing
-      this.schemaService.onInitFetchDays().pipe(
-        map(documentChangeAction => {
-          return documentChangeAction.map((doc: any) => {
-            return {
-              id: doc.payload.doc.id,
-              isCurrentWeek: doc.payload.doc.data().isCurrentWeek,
-              isDisplayable: doc.payload.doc.data().isDisplayable
-            };
-          }).filter(day => day.isDisplayable);
-        }))
-    ).subscribe(resultArray => {
 
-      // The first forkJoin Observable ==
-      this.userData = resultArray[0]; // admin field
-      console.log(this.userData);
+    return this.http.get(loginUrl , RequestOptions);
+    // ,
+    // error => {
+    //   console.log(error);
+    //       this.snackBar.open('Incorrect email or password.', 'OK');
 
-      // The second forkJoin Observable ==
-      // This is needed at the time that the schemaComponent starts.
-      // This is the best place after the login
-      resultArray[1].forEach(doc => {
-        const data = doc.data();
+    // })
+    // this.messagingSubscription = this.afMessaging.messages.subscribe((message: any) => {
+    //   this.snackBar.open(message.notification.body, 'OK', {duration: 30000});
+    // }, () => {
+    //   // swallow error when notifications blocked
+    // });
 
-        this.schemaService.machinesInfo.push({
-          id: doc.id,
-          type: data.type,
-          room: data.room,
-          color: data.color
-        });
-      });
+    // this.megaSubscription = combineLatest(
+    // this.authService.fetchUserInformation().valueChanges(),
+    // this.schemaService.onInitFetchMachinesInfo(),
+    // still an observable, but short processing
+    //   this.schemaService.onInitFetchDays().pipe(
+    //     map(documentChangeAction => {
+    //       return documentChangeAction.map((doc: any) => {
+    //         return {
+    //           id: doc.payload.doc.id,
+    //           isCurrentWeek: doc.payload.doc.data().isCurrentWeek,
+    //           isDisplayable: doc.payload.doc.data().isDisplayable
+    //         };
+    //       }).filter(day => day.isDisplayable);
+    //     }))
+    // ).subscribe(resultArray => {
 
-      // The third forkJoin Observable ==
-      this.schemaService.days = resultArray[2];
-      console.log(this.schemaService.days);
-      this.schemaService.daysChanged.next([...this.schemaService.days]);
-    }, err => {
-      console.log(err);
-    });
+    //   // The first forkJoin Observable ==
+    //   this.userData = resultArray[0]; // admin field
+    //   console.log(this.userData);
 
-    this.newMessageInNotificationBoardSubscription = this.settingsService.fetchPublicUserInfoRoom()
-      .subscribe((userDataDoc: any) => {
-        const userData = userDataDoc.data();
-        if (userData.isNewNotificationAvailable) {
-          this.isNewNotificationAvailable = userData.isNewNotificationAvailable;
-        }
-      });
+    //   // The second forkJoin Observable ==
+    //   // This is needed at the time that the schemaComponent starts.
+    //   // This is the best place after the login
+    //   resultArray[1].forEach(doc => {
+    //     // const data = doc.data();
+
+    //     // this.schemaService.machinesInfo.push({
+    //     //   id: doc.id,
+    //     //   type: data.type,
+    //     //   room: data.room,
+    //     //   color: data.color
+    //     // });
+    //   });
+
+    //   // The third forkJoin Observable ==
+    //   // this.schemaService.days = resultArray[2];
+    //   console.log(this.schemaService.days);
+    //   this.schemaService.daysChanged.next([this.schemaService.days]);
+    // }, err => {
+    //   console.log(err);
+    // });
+
+    // this.newMessageInNotificationBoardSubscription = this.settingsService.fetchPublicUserInfoRoom()
+    // .subscribe((userDataDoc: any) => {
+    //   const userData = userDataDoc.data();
+    //   if (userData.isNewNotificationAvailable) {
+    //     this.isNewNotificationAvailable = userData.isNewNotificationAvailable;
+    //   }
+    // });
   }
 
   ngOnDestroy(): void {
@@ -132,9 +163,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setSchemaRouterLinkActiveWhenOnARoom() {
-    this.router.events.subscribe(ev => {
+    this.router.events.subscribe((ev) => {
       if (ev instanceof NavigationEnd) {
-        if (ev.url.startsWith('/room/') || ev.url === '/') {
+        if (ev.url.startsWith("/room/") || ev.url === "/") {
           this.schemaRouterLinkActive = true;
         }
       } else {
@@ -150,23 +181,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // If you log off and log back in without reloading, this does not run. Only when you change
     // The screen size. That is why I do the workaround with the dashboardService
-    this.observableMediaSubscription = this.observableMedia.subscribe((media: MediaChange) => {
-      if (media.mqAlias === 'xs') {
-        this.isMobile = true;
-        this.sideNavMode = 'over';
-        this.sideNavOpened = false;
-      } else {
-        this.isMobile = false;
-        this.sideNavMode = 'side';
-        this.sideNavOpened = true;
+    this.observableMediaSubscription = this.observableMedia.subscribe(
+      (media: MediaChange) => {
+        if (media.mqAlias === "xs") {
+          this.isMobile = true;
+          this.sideNavMode = "over";
+          this.sideNavOpened = false;
+        } else {
+          this.isMobile = false;
+          this.sideNavMode = "side";
+          this.sideNavOpened = true;
+        }
       }
-    });
+    );
 
     this.dashboardService.dashboardScreen = {
       isMobile: this.isMobile,
       sideNavMode: this.sideNavMode,
-      sideNavOpened: this.sideNavOpened
+      sideNavOpened: this.sideNavOpened,
     };
   }
-
 }

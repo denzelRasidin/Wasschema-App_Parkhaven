@@ -46,7 +46,7 @@ export class AppointmentButtonComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.checkFields();
 
-    this.currentUserHouseNumber = this.authService.getCurrentSignedInUser().displayName;
+    // this.currentUserHouseNumber = this.authService.getCurrentSignedInUser().displayName;
   }
 
   ngOnChanges() {

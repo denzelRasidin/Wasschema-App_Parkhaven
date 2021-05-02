@@ -39,3 +39,4 @@ to test the latest development tools out there.
 #### Note
 Create your own environment & firebase-messaging-sw files when pulling.
  
+ng serve --proxy-config proxy.conf.json 

@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material';
-import { AuthService } from '../../auth/auth.service';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { Subject } from 'rxjs/internal/Subject';
-import { environment } from '../../../environments/environment';
 import { LoaderService } from '../../shared/loader/loader.service';
+import { JwtHelperService } from "@auth0/angular-jwt";
 
 @Injectable()
 export class SchemaService {
@@ -30,66 +28,76 @@ export class SchemaService {
   daysChanged = new Subject<any[]>();
 
   constructor(private http: HttpClient,
-              private authService: AuthService,
               private loadingService: LoaderService,
-              private afStore: AngularFirestore,
               private snackBar: MatSnackBar) {
   }
 
   onInitFetchMachinesInfo() {
-    return this.afStore.firestore.app.firestore().collection('machinesInfo').get();
+    // return this.afStore.firestore.app.firestore().collection('machinesInfo').get();
   }
 
   onInitFetchDays() {
-    return this.afStore.collection('days').snapshotChanges();
+    // return this.afStore.collection('days').snapshotChanges();
   }
 
   fetchMachinesData(room, startingDate, endingDate) {
     console.log('startingDate, endingDate', startingDate, endingDate);
-    return this.afStore.collection('appointments',
-      ref => ref.where('room', '==', room)
-        .where('date', '>=', startingDate)
-        .where('date', '<=', endingDate)
-        .orderBy('date')
-        .orderBy('time'));
+    // return this.afStore.collection('appointments',
+    //   ref => ref.where('room', '==', room)
+    //     .where('date', '>=', startingDate)
+    //     .where('date', '<=', endingDate)
+    //     .orderBy('date')
+    //     .orderBy('time'));
   }
 
   removeAppointment(appointment: Appointment) {
     this.loadingService.show();
 
-    const currentUser = this.authService.getCurrentSignedInUser();
+    // const currentUser = this.authService.getCurrentSignedInUser();
+    const tokenBase64 =  localStorage.getItem('token')
+    console.log(tokenBase64);
+    // var jwt = require('jsonwebtoken');
+    const helper = new JwtHelperService();
 
-    currentUser.getIdToken(true).then(token => {
-      this.http.put(`${environment.firebaseUrl}/removeAppointment`, {
-        appointment: appointment,
-        jwt: token
-      }).subscribe((response: { message }) => {
-        this.snackBar.open(response.message, 'OK');
-      }, (err: HttpErrorResponse) => {
-        console.log('err', err);
-      }, () => {
-        this.loadingService.hide();
-      });
-    });
+    const decodedToken = helper.decodeToken(tokenBase64);
+    const expirationDate = helper.getTokenExpirationDate(tokenBase64);
+    var isExpired = helper.isTokenExpired(tokenBase64);
+    console.log(decodedToken)
+    // console.log(expirationDate)
+    // console.log(isExpired)
+    // const currentUser =
+    // currentUser.getIdToken(true).then(token => {
+    //   this.http.put(`${environment.firebaseUrl}/removeAppointment`, {
+    //     appointment: appointment,
+    //     jwt: token
+    //   }).subscribe((response: { message }) => {
+    //     this.snackBar.open(response.message, 'OK');
+    //   }, (err: HttpErrorResponse) => {
+    //     console.log('err', err);
+    //   }, () => {
+    //     this.loadingService.hide();
+    //   });
+    // });
+
   }
 
   addAppointment(appointment: Appointment) {
     this.loadingService.show();
 
-    const currentUser = this.authService.getCurrentSignedInUser();
+    // const currentUser = this.authService.getCurrentSignedInUser();
 
-    currentUser.getIdToken(true).then(token => {
-      this.http.put(`${environment.firebaseUrl}/addAppointment`, {
-        appointment: appointment,
-        jwt: token
-      }).subscribe((response: { message }) => {
-        this.snackBar.open(response.message, 'OK');
-      }, (err: HttpErrorResponse) => {
-        console.log('err', err);
-      }, () => {
-        this.loadingService.hide();
-      });
-    });
+    // currentUser.getIdToken(true).then(token => {
+    //   this.http.put(`${environment.firebaseUrl}/addAppointment`, {
+    //     appointment: appointment,
+    //     jwt: token
+    //   }).subscribe((response: { message }) => {
+    //     this.snackBar.open(response.message, 'OK');
+    //   }, (err: HttpErrorResponse) => {
+    //     console.log('err', err);
+    //   }, () => {
+    //     this.loadingService.hide();
+    //   });
+    // });
   }
 
 }

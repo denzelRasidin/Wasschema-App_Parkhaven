@@ -40,12 +40,12 @@ export class PushNotificationsComponent implements OnInit, OnDestroy {
       // Check if tokens are similar, refresh token in db
       this.afMessaging.getToken.subscribe(token => {
         this.afFire.collection('pushTokens')
-          .doc(this.authService.getCurrentSignedInUser().displayName).set({token: token})
-          .then(() => {
-            this.notificationsEnabled = true;
-            this.permissionDenied = false;
-            this.permissionGranted = true;
-          });
+          // .doc(this.authService.getCurrentSignedInUser().displayName).set({token: token})
+          // .then(() => {
+          //   this.notificationsEnabled = true;
+          //   this.permissionDenied = false;
+          //   this.permissionGranted = true;
+          // });
       });
     } else { // denied
       this.notificationsEnabled = false;
@@ -73,7 +73,7 @@ export class PushNotificationsComponent implements OnInit, OnDestroy {
         .pipe(mergeMapTo(this.afMessaging.tokenChanges))
         .subscribe(token => {
             // add token to backend
-            this.afFire.collection('pushTokens').doc(this.authService.getCurrentSignedInUser().displayName).set({token: token});
+            // this.afFire.collection('pushTokens').doc(this.authService.getCurrentSignedInUser().displayName).set({token: token});
             console.log('Permission granted. Token', token);
             // show snackBar that you will get notifications
             this.snackBar.open('You will receive notifications 30 minutes before your appointments.', 'OK');
@@ -95,7 +95,7 @@ export class PushNotificationsComponent implements OnInit, OnDestroy {
       this.getTokenSubscription = this.afMessaging.getToken.pipe(switchMap(token => {
         return this.afMessaging.deleteToken(token);
       })).subscribe(isDeleted => {
-        this.afFire.collection('pushTokens').doc(this.authService.getCurrentSignedInUser().displayName).delete();
+        // this.afFire.collection('pushTokens').doc(this.authService.getCurrentSignedInUser().displayName).delete();
         if (this.messagesSubscription) {
           this.messagesSubscription.unsubscribe();
         }

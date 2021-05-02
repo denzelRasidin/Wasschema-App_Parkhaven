@@ -33,6 +33,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log('dddddddddddddddddddddddddddddd')
     this.loaderService.show();
 
     this.times = this.schemaService.times;
@@ -50,29 +51,29 @@ export class RoomComponent implements OnInit, OnDestroy {
 
     // This is the most important part. Based on the route (room id) the specific firebase path
     // is selected schema/room.id
-    this.megaSubscription = this.route.params.pipe(switchMap(roomParams => {
-      this.roomId = roomParams.id;
-      console.log('roomId', this.roomId);
-      this.currentRoomMachinesInfo = this.getCurrentRoomMachinesInfo(this.schemaService.machinesInfo);
+    // this.megaSubscription = this.route.params.pipe(switchMap(roomParams => {
+    //   this.roomId = roomParams.id;
+    //   console.log('roomId', this.roomId);
+    //   this.currentRoomMachinesInfo = this.getCurrentRoomMachinesInfo(this.schemaService.machinesInfo);
 
-      this.machines = this.createEmptyMachinesArray();
+    //   this.machines = this.createEmptyMachinesArray();
 
-      return this.schemaService.fetchMachinesData(this.roomId, this.days[0].id, this.days[6].id).stateChanges();
-    })).subscribe((documentChangeAction) => {
-      documentChangeAction.forEach((doc: any) => {
-        // console.log(doc);
-        const appointment = doc.payload.doc.data();
-        if (doc.type === 'added') { // the first pull always has doc.type = added
-          this.machines[appointment.machine][appointment.date][appointment.time] = appointment.houseNumber;
-          // console.log('appointment added', appointment);
-        } else { // doc.type === 'removed'
-          this.machines[appointment.machine][appointment.date][appointment.time] = '';
-          // console.log('appointment removed', appointment);
-        }
-      });
+    //   return this.schemaService.fetchMachinesData(this.roomId, this.days[0].id, this.days[6].id).stateChanges();
+    // })).subscribe((documentChangeAction) => {
+    //   documentChangeAction.forEach((doc: any) => {
+    //     // console.log(doc);
+    //     const appointment = doc.payload.doc.data();
+    //     if (doc.type === 'added') { // the first pull always has doc.type = added
+    //       this.machines[appointment.machine][appointment.date][appointment.time] = appointment.houseNumber;
+    //       // console.log('appointment added', appointment);
+    //     } else { // doc.type === 'removed'
+    //       this.machines[appointment.machine][appointment.date][appointment.time] = '';
+    //       // console.log('appointment removed', appointment);
+    //     }
+    //   });
 
-      this.loaderService.hide();
-    });
+      // this.loaderService.hide();
+    // });
   }
 
   ngOnDestroy(): void {
