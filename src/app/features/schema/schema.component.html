@@ -8,7 +8,7 @@
      *ngFor="let room of rooms"
      [routerLink]="['/room', room.id]"
      routerLinkActive #rla="routerLinkActive"
-     [active]="rla.isActive">
+     [active]="rla.isActive"   (click)="selectRoom(room.id)">
     {{room.name}}
   </a>
 </nav>

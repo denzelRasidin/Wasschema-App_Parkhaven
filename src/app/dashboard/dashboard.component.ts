@@ -57,37 +57,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.screenHandler();
     this.loggedInUser = JSON.parse(localStorage.getItem("CurrentUser"));
-    console.log(localStorage.getItem("token"));
     const token =  localStorage.getItem('token')
-    console.log(token);
     const headers = new HttpHeaders({
-      // "Content-Type": "application/json",
-      // "Accept": '*/*',
       Authorization: `Bearer ${token}`,
-      // 'Access-Control-Allow-Origin': 'http://localhost:4200/'
     });
-    // console.log("header"+ JSON.parse(headers))
-    // let headers = new HttpHeaders();
-    // headers.append("Content-Type", "application/json");
-    // headers.append("authentication", `${localStorage.getItem("token")}`);
-    let  RequestOptions = ({ headers: headers });
-console.log( "headers" + RequestOptions);
-// console.log(RequestOptions.headers)
 
+    let  RequestOptions = ({ headers: headers });
     let loginUrl =
       "api/v1/building/woongebouw-parkhaven/room/A";
     this.http.get(loginUrl,  RequestOptions ).subscribe((data) => {
+      console.log('api/v1/building/woongebouw-parkhaven/room/A')
       console.log(data);
-    });
-
-
-    return this.http.get(loginUrl , RequestOptions);
-    // ,
-    // error => {
-    //   console.log(error);
-    //       this.snackBar.open('Incorrect email or password.', 'OK');
-
-    // })
+    },
+    error => {
+      console.log(error);
+          // this.snackBar.open('Incorrect email or password.', 'OK');
+    })
     // this.messagingSubscription = this.afMessaging.messages.subscribe((message: any) => {
     //   this.snackBar.open(message.notification.body, 'OK', {duration: 30000});
     // }, () => {
@@ -120,13 +105,13 @@ console.log( "headers" + RequestOptions);
     //   resultArray[1].forEach(doc => {
     //     // const data = doc.data();
 
-    //     // this.schemaService.machinesInfo.push({
-    //     //   id: doc.id,
-    //     //   type: data.type,
-    //     //   room: data.room,
-    //     //   color: data.color
-    //     // });
-    //   });
+        // this.schemaService.machinesInfo.push({
+        //   id: doc.id,
+        //   type: data.type,
+        //   room: data.room,
+        //   color: data.color
+        // });
+      // });
 
     //   // The third forkJoin Observable ==
     //   // this.schemaService.days = resultArray[2];
@@ -146,10 +131,10 @@ console.log( "headers" + RequestOptions);
   }
 
   ngOnDestroy(): void {
-    this.megaSubscription.unsubscribe();
-    this.observableMediaSubscription.unsubscribe();
-    this.messagingSubscription.unsubscribe();
-    this.newMessageInNotificationBoardSubscription.unsubscribe();
+    // this.megaSubscription.unsubscribe();
+    // this.observableMediaSubscription.unsubscribe();
+    // this.messagingSubscription.unsubscribe();
+    // this.newMessageInNotificationBoardSubscription.unsubscribe();
   }
 
   closeSideNav() {

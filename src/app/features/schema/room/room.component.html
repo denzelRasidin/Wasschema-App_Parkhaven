@@ -3,11 +3,11 @@
        [class.roomB_Laundrymachine]="roomId === 'B'"
        [class.roomC_Laundrymachine]="roomId === 'C'">
     <mat-chip-list>
-      <mat-chip class="left_taken">
-        {{readableType(currentRoomMachinesInfo[0].type)}} {{currentRoomMachinesInfo[0].id}}
+      <mat-chip class="left_taken" [ngStyle]="{'background-color': '#'+currentRoomMachinesInfo[0].color}" >
+        {{readableType(currentRoomMachinesInfo[0].type)}} {{currentRoomMachinesInfo[0].name}}
       </mat-chip>
-      <mat-chip class="right_taken">
-        {{readableType(currentRoomMachinesInfo[1].type)}} {{currentRoomMachinesInfo[1].id}}
+      <mat-chip class="right_taken" [ngStyle]="{'background-color': '#'+currentRoomMachinesInfo[1].color}">
+        {{readableType(currentRoomMachinesInfo[1].type)}} {{currentRoomMachinesInfo[1].name}}
       </mat-chip>
     </mat-chip-list>
 
@@ -55,11 +55,11 @@
        [class.roomB_Dryer]="roomId === 'B'"
        [class.roomC_Dryer]="roomId === 'C'">
     <mat-chip-list>
-      <mat-chip class="left_taken">
-        {{readableType(currentRoomMachinesInfo[2].type)}} {{currentRoomMachinesInfo[2].id}}
+      <mat-chip class="left_taken" [ngStyle]="{'background-color': '#'+currentRoomMachinesInfo[2].color}">
+        {{readableType(currentRoomMachinesInfo[2].type)}} {{currentRoomMachinesInfo[2].name}}
       </mat-chip>
-      <mat-chip class="right_taken">
-        {{readableType(currentRoomMachinesInfo[3].type)}} {{currentRoomMachinesInfo[3].id}}
+      <mat-chip class="right_taken" [ngStyle]="{'background-color': '#'+currentRoomMachinesInfo[3].color}">
+        {{readableType(currentRoomMachinesInfo[3].type)}} {{currentRoomMachinesInfo[3].name}}
       </mat-chip>
     </mat-chip-list>
 

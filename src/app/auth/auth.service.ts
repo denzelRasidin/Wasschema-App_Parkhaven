@@ -33,7 +33,7 @@ export class AuthService {
   login(email: string, password: string){
     this.loaderService.show();
     console.log(email +'---' + password)
-    let loginUrl = "http://85.145.70.161:8080/api/v1/building/woongebouw-parkhaven/account/login"
+    let loginUrl = "api/v1/building/woongebouw-parkhaven/account/login"
     let postData = {email : email ,password :password} ;
     this.http.post<any>(loginUrl, postData, {observe: 'response'}).subscribe(data => {
       // console.log(data.headers.get('authorization'));
